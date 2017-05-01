@@ -11,9 +11,11 @@ namespace list{
 typedef string Elem;      // tipo base, compatibile con il tipo Label dell'grafo 
 
 const Elem emptyElem = "$#$#$";
+const unsigned int blockSize = 10;
 
 struct list {
-   
+   unsigned int size, maxsize;
+   Elem* lista;
 };
 
 typedef list List;

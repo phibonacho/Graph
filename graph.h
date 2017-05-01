@@ -6,9 +6,9 @@
 #include <fstream> 
 #include <string>         
 
-#include "list.h"
-
-using namespace std; 
+#include "DLL.h"
+#include "tree.h"
+using namespace std;
 
 namespace graph {
 
@@ -59,3 +59,5 @@ void findPath(Label, Label, list::List &, int &, const Graph& g);
 /* Funzioni che non caratterizzano il TDD Graph, ma che servono per input/output */
 //tree::Tree readFromFile(string);
 void printGraph(const graph::Graph&);
+
+void trealize(graph::Label, graph::Graph&);

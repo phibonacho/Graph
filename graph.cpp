@@ -2,70 +2,181 @@
 
 using namespace graph;
 
-struct adjCell{
-	Label payload;
-	adjCell* next;
-};
+typedef struct edgeNode{
+	//peso della cella;
+	unsigned int weight;
+	//puntatore al nodo di destinazione;
+	vertexNode* dest;
+	//puntatore alla prossima cella di adiacenza;
+	edgeNode* nextEdge;
+}* adjList;
 
-typedef adjCell* adjList;
+const adjList emptyEdge = NULL;
 
 struct graph::vertexNode{
+	//nome del nodo;
 	Label payload;
+	//puntatore alla lista di adiacenza;
 	adjList edges;
-	Graph* next;
+	//puntatore al nodo successivo;
+	vertexNode* nextVertex;
+	//
+	bool visited;
 };
 /*******************************************************************************************************/
 // Grafo
 /*******************************************************************************************************/
 
+/*Helper functions*/
+bool memberNode(Label l, const Graph& g){
+	if(g==emptyGraph)return false;
+	if(g->payload==l) return true;
+	return memberNode(l, g->nextVertex);
+}
+
+Graph getVertex(Label l, const Graph& g){
+	if(g==emptyGraph) return emptyGraph;
+	if(g->payload == l) return g;
+	return getVertex(l, g->nextVertex);
+}
+
 // Restituisce il grafo vuoto
-Graph graph::createEmptyGraph()
-{
+Graph graph::createEmptyGraph(){
   return emptyGraph;
 }
 
 // Aggiunge nuovo vertice con etichetta la stringa. Fallisce se gia' presente
 bool graph::addVertex(Label l, Graph& g) {
-  return true;
+	if(memberNode(l, g))return false;
+	Graph tmp = new vertexNode;
+	tmp->payload = l;
+	tmp->edges = emptyEdge;
+	tmp->nextVertex = g;
+	tmp->visited = false;
+	g = tmp;
+	return true;
 }
 
 // Aggiunge un arco di peso "w" tra i nodi con etichetta "f" e "t". Fallisce se esiste gia' l'arco
 // se i nodi non esistono nel grafo e se si tenta di inserire un arco tra un nodo ed esso stesso
 bool graph::addEdge(Label from, Label to, Weight w, Graph& g) {
-  return true;
+	if(from==to) return false;
+	Graph vertexfrom = getVertex(from, g);
+	Graph vertexto = getVertex(to, g);
+	if(vertexfrom==emptyGraph || vertexto == emptyGraph) return false;
+	//control of vertexfrom's adjacentment list:
+	for(adjList tmp = vertexfrom->edges; tmp!=emptyEdge ; tmp = tmp->nextEdge) if(tmp->dest==vertexto) return false;
+	//after all these damn controls, add the fucking edge:
+	{
+		adjList aux = new edgeNode;
+		aux->weight = w;
+		aux->dest = vertexto;
+		aux->nextEdge = vertexfrom->edges;
+		vertexfrom->edges = aux;
+	}
+	//and then the other one:
+	{
+		adjList aux = new edgeNode;
+		aux->weight = w;
+		aux->dest = vertexfrom;
+		aux->nextEdge = vertexto->edges;
+		vertexto->edges = aux;
+	}
+	return true;
 }
 
 // Restituisce true se il grafo e' vuoto, false altrimenti
-bool graph::isEmpty(const Graph& g)
-{ 
- return true;
+bool graph::isEmpty(const Graph& g){
+	return g==emptyGraph;
 }
 
 // Ritorna il numero di vertici del grafo
 int graph::numVertices(const Graph& g){
- return 0;
+ 	if(g==emptyGraph)return 0;
+ 	return 1+numVertices(g->nextVertex);
 }
 
 // Ritorna il numero di archi del grafo
 int graph::numEdges(const Graph& g){
- return 0;
+	int numEdges = 0;
+	for(Graph i = g; i!=emptyGraph; i=i->nextVertex)
+		for(adjList j =i->edges; j!=emptyEdge; j=j->nextEdge) numEdges++;
+	return numEdges/2;
 }
 
 // Calcola e ritorna (nel secondo parametro) il grado del nodo. Fallisce
 // se il nodo non esiste
 bool graph::nodeDegree(Label l, int& degree, const Graph& g) {
-  return true;
+	degree = 0;
+	for(Graph tmp=g; tmp!=emptyGraph; tmp=tmp->nextVertex, degree++) if(tmp->payload==l) return true;
+	degree = -1;
+	return false;
 }
 
 // Verifica se i due vertici v1 e v2 sono adiacenti (ovvero se esiste un arco)
 bool graph::areAdjacent(Label v1, Label v2, const Graph& g) {
-  return true;
+	Graph vertex1 = getVertex(v1, g);
+	Graph vertex2 = getVertex(v2, g);
+	if(vertex1==emptyGraph || vertex2==emptyGraph) return false;
+	for(adjList tmp = vertex1->edges; tmp!= emptyEdge; tmp = tmp->nextEdge) if(tmp->dest==vertex2) return true;
+	return false;
 }
 
 // Restituisce la lista di adiacenza di un vertice
 list::List graph::adjacentList(Label v1, const Graph& g) {
-  list::List lst = list::createEmpty();
-  return lst;
+	adjList tmp;
+	Graph vertex1 = getVertex(v1, g);
+	list::List lst = list::createEmpty();
+	for(tmp=vertex1->edges; tmp!=emptyEdge; tmp=tmp->nextEdge) list::addBack(lst, tmp->dest->payload);
+	return lst;
+}
+
+//crea albero del grafo, per quando il gioco si fa duro:
+void initializeTree(Graph& g, tree::Tree& t){
+	if(g==emptyGraph) return;
+	if(g->visited) return;
+	if(tree::isEmpty(t)) if(!tree::member(g->payload, t)) tree::addElem(tree::emptyLabel, g->payload, t);
+	g->visited = true;
+	for(adjList tmp=g->edges; tmp!=emptyEdge; tmp=tmp->nextEdge) tree::addElem(g->payload, (tmp->dest)->payload, t);
+	for(adjList tmp=g->edges; tmp!=emptyEdge; tmp=tmp->nextEdge) initializeTree(tmp->dest, t);
+}
+
+
+
+int computeLenght(const list::List& path, const Graph& g, unsigned int index){
+	adjList tmp = g->edges;
+	//in g è passato il nodo di partenza:
+	//leggo il primo elemento della lista, lo cerco nelle adiacenze del nodo, aggiungo weight a lenght
+	//richiamo ricorsivamente sul nodo successivo;
+	if(index==list::size(path)) return 0;
+	for(;tmp!=emptyEdge; tmp=tmp->nextEdge){
+		if((tmp->dest)->payload==list::get(index, path)) break;
+	}
+	return tmp->weight+computeLenght(path, tmp->dest, index+1);
+}
+
+void findPath_aux(Label from, Label to, list::List& path, int& len, Graph& g){
+	tree::Tree t1= tree::createEmpty(), t2=tree::createEmpty();
+	//realizzo albero partendo da from:
+	Graph vertex1 = getVertex(from, g);
+	initializeTree(vertex1, t1);
+	for(Graph tmp = g; tmp!=emptyGraph; tmp=tmp->nextVertex) tmp->visited=false;
+	//creo lista con from antenato di to:
+	list::List l1 = tree::ancestorsR(to, t1);
+	list::popFront(l1);
+	list::addBack(l1, to);
+	//realizzo albero partendo da to:
+	Graph vertex2 = getVertex(to, g);
+	initializeTree(vertex2, t2);
+	for(Graph tmp = g; tmp!=emptyGraph; tmp=tmp->nextVertex) tmp->visited=false;
+	list::List tmp = tree::ancestorsR(from, t2);
+	list::List l2 = list::createEmpty();
+	for(unsigned int i=0;i<list::size(tmp);i++) list::addFront(l2, list::get(i, tmp));
+	//calcolo distanze:
+	int len1 = computeLenght(l1, vertex1, 0);
+	int len2 = computeLenght(l2, vertex1, 0);
+	len = (len1<len2? len1 : len2);
+	path = (len1<len2? l1 : l2);
 }
 
 // Ritorna un cammino tra una citta' ed un altra
@@ -76,10 +187,34 @@ list::List graph::adjacentList(Label v1, const Graph& g) {
 // La funzione rappresenta una variante della visita DFS
 
 void graph::findPath(Label v1, Label v2, list::List &path, int &len, const Graph& g) {
-    return;    
+	Graph aux = g;
+	if(getVertex(v1, aux)==emptyGraph || getVertex(v2, aux)==emptyGraph) return;
+	findPath_aux(v1, v2, path, len, aux);
 }
 /*******************************************************************************************************/
 // Stampa il grafo
+void printAdj(const adjList& e){
+	if(e==emptyEdge){
+		cout<<"\b\b.";
+		return;	
+	} 
+	cout<<e->dest->payload<<"("<<e->weight<<"), ";
+	return printAdj(e->nextEdge);
+}
+
 void printGraph(const graph::Graph& g) {
-  
+	if(g==emptyGraph) return;
+	cout<<g->payload<<": ";
+	printAdj(g->edges);
+	cout<<endl;
+	return printGraph(g->nextVertex);
+}
+
+void trealize(graph::Label v1, graph::Graph& g){
+	for(Graph tmp = g; tmp!=emptyGraph; tmp=tmp->nextVertex) tmp->visited=false;
+	tree::Tree t = tree::createEmpty();
+	Graph vertex1 = getVertex(v1, g);
+	initializeTree(vertex1, t);
+	printTree(t);
+	for(Graph tmp = g; tmp!=emptyGraph; tmp=tmp->nextVertex) tmp->visited=false;
 }
