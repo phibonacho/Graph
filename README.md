@@ -7,11 +7,11 @@ Since I have difficulties even in cooking scrambled eggs,
 I thought that upload a school project as first repository(just to try to understand how github works) would be a great idea.
 
 This repository contains **3 libraries**:
-**-graph.h:
+-**graph.h**:
     implement graph data type (as list of vertices with adjacency list);
--DLL.h:
+-**DLL.h**:
     implement doubly linked list data type;
--tree.h**:
+-**tree.h**:
     implement tree data type (incredible, right?);
 
 # Graph is the main library: 
