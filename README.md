@@ -15,30 +15,30 @@ I thought that upload a school project as first repository(just to try to unders
     implement tree data type (incredible, right?);
 
 # Graph is the main library: 
-**the reason why I'm actually sleeping really bad lately. It implements, more or less, all basic functions of graph data type as:
+the reason why I'm actually sleeping really bad lately. It implements, more or less, all basic functions of graph data type:
 
-bool addVertex(Label, Graph&);
+bool **addVertex**(Label, Graph&);
     add labeled vertex to graph;
 
-bool addEdge(Label, Label, Weight, Graph&);
+bool **addEdge**(Label, Label, Weight, Graph&);
     add edge between two labeled vertices;
 
-bool isEmpty(const Graph&);
+bool **isEmpty**(const Graph&);
     return true if the graph is empty;
 
-int numVertices(const Graph&);
+int **numVertices**(const Graph&);
     return the number of vertices in graph;
 
-int numEdges(const Graph&);
+int **numEdges**(const Graph&);
     return the number of edges in graph;
 
-bool nodeDegree(Label, int&, const Graph&);
+bool **nodeDegree**(Label, int&, const Graph&);
     compute the Labeled vertex's degree and return it in the second parameter, unless it return false;
 
-bool areAdjacent(Label, Label, const Graph&); 
+bool **areAdjacent**(Label, Label, const Graph&); 
     return true if two labeled vertices are adjacent;
 
-void findPath(Label, Label, list::List &, int &, const Graph& g);
+void **findPath**(Label, Label, list::List &, int &, const Graph& g);
     return in the second parameter a list of the path, label by label, wich leads from first label to second label,
     and in the third one the lenght of the path(each edge has a weight);
 
@@ -47,7 +47,7 @@ void findPath(Label, Label, list::List &, int &, const Graph& g);
 list::List adjacentList(Label, const Graph&);
     return all vertices adjacent to the vertex labeled "label";
 
-void treealize(graph::Label, graph::Graph&);
+void ***treealize**(graph::Label, graph::Graph&);
     realize a tree (why am I so stupid?) out of the graph starting from the given vertex;
 
 I'm currently working on findpath() function.
