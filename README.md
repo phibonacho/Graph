@@ -47,7 +47,7 @@ void **findPath**(Label, Label, list::List &, int &, const Graph& g);
 list::List adjacentList(Label, const Graph&);
     return all vertices adjacent to the vertex labeled "label";
 
-void ***treealize**(graph::Label, graph::Graph&);
+void ***treealize***(graph::Label, graph::Graph&);
     realize a tree (why am I so stupid?) out of the graph starting from the given vertex;
 
 I'm currently working on findpath() function.
