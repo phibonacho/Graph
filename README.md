@@ -14,7 +14,8 @@ I thought that upload a school project as first repository(just to try to unders
 -tree.h:
     implement tree data type (incredible, right?);
 
-# Graph is the main library, the reason why I'm actually sleeping really bad lately. It implements, more or less, all basic functions of graph data type as:
+# Graph is the main library: 
+**the reason why I'm actually sleeping really bad lately. It implements, more or less, all basic functions of graph data type as:
 
 bool addVertex(Label, Graph&);
     add labeled vertex to graph;
