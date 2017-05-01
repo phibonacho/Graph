@@ -6,14 +6,14 @@ Forgive my bad english.
 Since I have difficulties even in cooking scrambled eggs, 
 I thought that upload a school project as first repository(just to try to understand how github works) would be a great idea.
 
-This repository contains **3 libraries:
--graph.h:
+This repository contains **3 libraries**:
+**-graph.h:
     implement graph data type (as list of vertices with adjacency list);
 -DLL.h:
     implement doubly linked list data type;
--tree.h:
+-tree.h**:
     implement tree data type (incredible, right?);
-**
+
 # Graph is the main library: 
 the reason why I'm actually sleeping really bad lately. It implements, more or less, all basic functions of graph data type:
 
