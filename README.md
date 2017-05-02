@@ -50,4 +50,8 @@ It implements, more or less, all basic functions of graph data type:
 - void ***treealize***(graph::Label, graph::Graph&);
     * realize a tree (why am I so stupid?) out of the graph starting from the given vertex;
 
-I'm currently working on *findpath()* function.
+
+
+### UPDATE:
+- Added the auxiliar function: ```int* dijkstra(Graph&, Label)``` 
+    * implement [Dijkstra's algorithm] (https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm) and return an array wich contains the shortest distance of each graph's vertex from the given label. (**Note**: i-th elem of array is referred to i-th vertex in graph)
