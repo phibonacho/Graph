@@ -28,17 +28,15 @@ struct graph::vertexNode{
 /*******************************************************************************************************/
 
 /*Helper functions*/
-bool memberNode(Label l, const Graph& g){
-	if(g==emptyGraph)return false;
-	if(g->payload==l) return true;
-	return memberNode(l, g->nextVertex);
-}
-
-Graph getVertex(Label l, const Graph& g){
-	if(g==emptyGraph) return emptyGraph;
-	if(g->payload == l) return g;
-	return getVertex(l, g->nextVertex);
-}
+bool memberNode(Label , const Graph&);
+void reinit(Graph&);
+Graph getVertex(Label , const Graph&);
+int* dijkstra(Graph&, Label);
+void initializeTreeDFS(Graph&, tree::Tree&);
+void initializeTreeBFS(Graph&, tree::Tree&);
+int computeLenght(const list::List&, const Graph&, unsigned int);
+void findPath_aux(Label, Label, list::List&, int&, Graph&);
+void printAdj(const adjList&);
 
 // Restituisce il grafo vuoto
 Graph graph::createEmptyGraph(){
@@ -131,54 +129,6 @@ list::List graph::adjacentList(Label v1, const Graph& g) {
 	return lst;
 }
 
-//crea albero del grafo, per quando il gioco si fa duro:
-void initializeTree(Graph& g, tree::Tree& t){
-	if(g==emptyGraph) return;
-	if(g->visited) return;
-	if(tree::isEmpty(t)) if(!tree::member(g->payload, t)) tree::addElem(tree::emptyLabel, g->payload, t);
-	g->visited = true;
-	for(adjList tmp=g->edges; tmp!=emptyEdge; tmp=tmp->nextEdge) tree::addElem(g->payload, (tmp->dest)->payload, t);
-	for(adjList tmp=g->edges; tmp!=emptyEdge; tmp=tmp->nextEdge) initializeTree(tmp->dest, t);
-}
-
-
-
-int computeLenght(const list::List& path, const Graph& g, unsigned int index){
-	adjList tmp = g->edges;
-	//in g è passato il nodo di partenza:
-	//leggo il primo elemento della lista, lo cerco nelle adiacenze del nodo, aggiungo weight a lenght
-	//richiamo ricorsivamente sul nodo successivo;
-	if(index==list::size(path)) return 0;
-	for(;tmp!=emptyEdge; tmp=tmp->nextEdge){
-		if((tmp->dest)->payload==list::get(index, path)) break;
-	}
-	return tmp->weight+computeLenght(path, tmp->dest, index+1);
-}
-
-void findPath_aux(Label from, Label to, list::List& path, int& len, Graph& g){
-	tree::Tree t1= tree::createEmpty(), t2=tree::createEmpty();
-	//realizzo albero partendo da from:
-	Graph vertex1 = getVertex(from, g);
-	initializeTree(vertex1, t1);
-	for(Graph tmp = g; tmp!=emptyGraph; tmp=tmp->nextVertex) tmp->visited=false;
-	//creo lista con from antenato di to:
-	list::List l1 = tree::ancestorsR(to, t1);
-	list::popFront(l1);
-	list::addBack(l1, to);
-	//realizzo albero partendo da to:
-	Graph vertex2 = getVertex(to, g);
-	initializeTree(vertex2, t2);
-	for(Graph tmp = g; tmp!=emptyGraph; tmp=tmp->nextVertex) tmp->visited=false;
-	list::List tmp = tree::ancestorsR(from, t2);
-	list::List l2 = list::createEmpty();
-	for(unsigned int i=0;i<list::size(tmp);i++) list::addFront(l2, list::get(i, tmp));
-	//calcolo distanze:
-	int len1 = computeLenght(l1, vertex1, 0);
-	int len2 = computeLenght(l2, vertex1, 0);
-	len = (len1<len2? len1 : len2);
-	path = (len1<len2? l1 : l2);
-}
-
 // Ritorna un cammino tra una citta' ed un altra
 // Il cammino da "v1" a "v2" alla fine sara' in "path"
 // e la lunghezza sara' in "len".
@@ -187,20 +137,16 @@ void findPath_aux(Label from, Label to, list::List& path, int& len, Graph& g){
 // La funzione rappresenta una variante della visita DFS
 
 void graph::findPath(Label v1, Label v2, list::List &path, int &len, const Graph& g) {
-	Graph aux = g;
-	if(getVertex(v1, aux)==emptyGraph || getVertex(v2, aux)==emptyGraph) return;
-	findPath_aux(v1, v2, path, len, aux);
+	int index;
+	Graph tmp = g;
+	reinit(tmp);
+	int* p = dijkstra(tmp, v1);
+	nodeDegree(v2, index, g);
+	len = p[index];
+	delete[] p;
 }
 /*******************************************************************************************************/
 // Stampa il grafo
-void printAdj(const adjList& e){
-	if(e==emptyEdge){
-		cout<<"\b\b.";
-		return;	
-	} 
-	cout<<e->dest->payload<<"("<<e->weight<<"), ";
-	return printAdj(e->nextEdge);
-}
 
 void printGraph(const graph::Graph& g) {
 	if(g==emptyGraph) return;
@@ -214,7 +160,86 @@ void trealize(graph::Label v1, graph::Graph& g){
 	for(Graph tmp = g; tmp!=emptyGraph; tmp=tmp->nextVertex) tmp->visited=false;
 	tree::Tree t = tree::createEmpty();
 	Graph vertex1 = getVertex(v1, g);
-	initializeTree(vertex1, t);
+	initializeTreeDFS(vertex1, t);
 	printTree(t);
 	for(Graph tmp = g; tmp!=emptyGraph; tmp=tmp->nextVertex) tmp->visited=false;
+}
+
+/***************************************FUNZIONI AUSILIARIE******************************/
+bool memberNode(Label l, const Graph& g){
+	if(g==emptyGraph)return false;
+	if(g->payload==l) return true;
+	return memberNode(l, g->nextVertex);
+}
+
+void reinit(Graph& g){
+	if(g==emptyGraph) return;
+	g->visited = false;
+	return reinit(g->nextVertex);
+}
+
+Graph getVertex(Label l, const Graph& g){
+	if(g==emptyGraph) return emptyGraph;
+	if(g->payload == l) return g;
+	return getVertex(l, g->nextVertex);
+}
+
+//crea albero del grafo, per quando il gioco si fa duro:
+void initializeTreeDFS(Graph& g, tree::Tree& t){
+	if(g==emptyGraph) return;
+	if(g->visited) return;
+	if(tree::isEmpty(t)) if(!tree::member(g->payload, t)) tree::addElem(tree::emptyLabel, g->payload, t);
+	g->visited = true;
+	for(adjList tmp=g->edges; tmp!=emptyEdge; tmp=tmp->nextEdge) tree::addElem(g->payload, (tmp->dest)->payload, t);
+	for(adjList tmp=g->edges; tmp!=emptyEdge; tmp=tmp->nextEdge) initializeTreeDFS(tmp->dest, t);
+}
+
+int* dijkstra(Graph& g, Label from){
+	//creazione dell'array di dimensione del numero di nodi:
+	Label temp_Label;
+	int dsize = numVertices(g), index, temp_len;
+	int* distance = new int[dsize];
+	//creazione della lista per le chiamate in ampiezza:
+	list::List queue = list::createEmpty();
+	//aggiungo l'etichetta di partenza:
+	list::addBack(queue, from);
+	//inizializzo tutte le distanze al massimo:
+	for(int i = 0; i<dsize; i++) distance[i] = INT_MAX;
+	//pongo la distanza del nodo di partenza a zero;
+	if(nodeDegree(from, index, g)) distance[index] = 0;
+	do{
+		//ottengo label di cui fare la visita:
+		temp_Label = list::get(0, queue);
+		//chiamo sul nodo:
+		Graph aux = getVertex(temp_Label, g);
+		//rimuovo il nodo dalla lista:
+		list::popFront(queue);
+		//lo marco come visitato:
+		aux->visited = true;
+		//aggiorno la lunghezza corrente(quella fino al nodo che sto visitando):
+		nodeDegree(temp_Label, index, g);
+		temp_len = distance[index];
+		//per ogni elemento della lista di adiacenza:
+		for(adjList tmp=aux->edges;tmp!=emptyEdge; tmp=tmp->nextEdge){
+			//se l'elemento non è stato visitato:
+			if(!tmp->dest->visited){
+				//lo aggiungo alla lista per la prossima chiamata:
+				list::addBack(queue, (tmp->dest)->payload);
+				//lo marco come visitato:
+				tmp->dest->visited = true;
+			}
+			nodeDegree(tmp->dest->payload, index, g);
+			if(distance[index]>temp_len+tmp->weight) distance[index]=temp_len+tmp->weight;
+		}
+	}while(!list::isEmpty(queue));
+	return distance;
+}
+
+void printAdj(const adjList& e){
+	if(e==emptyEdge){
+		cout<<"\b\b.";
+		return;	
+	} 
+	cout<<e->dest->payload<<"("<<e->weight<<"), ";
+	return printAdj(e->nextEdge);
 }
