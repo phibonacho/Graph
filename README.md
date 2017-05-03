@@ -6,17 +6,14 @@ Forgive my bad english.
 Since I have difficulties even in cooking scrambled eggs, 
 I thought that upload a school project as first repository(just to try to understand how github works) would be a great idea.
 
-This repository contains **3 libraries**:
-- **graph.h**:
-    implement graph data type (as list of vertices with adjacency list);
+This repository contains **2 libraries**:
+- **graph.h**;
 - **DLL.h**:
-    implement doubly linked list data type;
-- **tree.h**:
-    implement tree data type (incredible, right?);
+    (auxiliary library)implement doubly linked list data type;
 
 ##### Graph is the main library: 
 ~~the reason why I'm actually sleeping really, really bad lately.~~
-It implements, more or less, all basic functions of graph data type:
+It implements, more or less, graph data type and some basic functions:
 
 - bool **addVertex**(Label, Graph&);
     * add labeled vertex to graph;
@@ -47,11 +44,14 @@ It implements, more or less, all basic functions of graph data type:
 - list::List adjacentList(Label, const Graph&);
     * return all vertices adjacent to the vertex labeled "label";
 
-- void ***treealize***(graph::Label, graph::Graph&);
-    * realize a tree (why am I so stupid?) out of the graph starting from the given vertex;
-
 
 
 ### UPDATE:
-- Added the auxiliar function: ```int* dijkstra(Graph&, Label)``` 
-    * implement [Dijkstra's algorithm](https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm) and return an array wich contains the shortest distance of each graph's vertex from the given label. (**Note**: i-th elem of array is referred to i-th vertex in graph)
+- Added findPath's auxiliar function: ```int* dijkstra(Graph&, Label)``` 
+    * implement [Dijkstra's algorithm](https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm) and return an array wich contains the shortest distance of each graph's vertex from the given label; (**Note**: i-th elem of array is referred to i-th vertex in graph)
+
+- Added findPath's auxiliary function ```void findPath_aux(Graph&, Label, Label, int*, list::List&)```
+    * returns in 4-th parameter the path, label by label, wich leads from first label to second label;
+
+- Removed ```tree.h``` library:
+    * the spanning tree creation is now ensured by [dijkstra()](#dijkstra) and [findPath()](#findPath_aux) functions;
