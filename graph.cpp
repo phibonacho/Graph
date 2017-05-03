@@ -116,8 +116,8 @@ void graph::findPath(Label v1, Label v2, list::List &path, int &len, const Graph
 	int index;
 	Graph tmp = g;
 	nodeDegree(v2, index, g);
-	findPath_aux(tmp, v1, v2, p, path);
 	int* p = dijkstra(tmp, v1);
+	findPath_aux(tmp, v1, v2, p, path);
 	len = p[index];
 	delete[] p;
 }
@@ -164,7 +164,7 @@ Graph getVertex(Label l, const Graph& g){
 int* dijkstra(Graph& g, Label from){
 	Label temp_Label;
 	int dsize = numVertices(g), index, temp_len;
-	reini(g);
+	reinit(g);
 	int* distance = new int[dsize];
 	list::List queue = list::createEmpty();
 	list::addBack(queue, from);
