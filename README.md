@@ -54,4 +54,4 @@ It implements, more or less, graph data type and some basic functions:
     * returns in 4-th parameter the path, label by label, wich leads from first label to second label;
 
 - Removed ```tree.h``` library:
-    * the spanning tree creation is now ensured by [dijkstra()](#dijkstra) and [findPath()](#findPath_aux) functions;
+    * the spanning tree computation is now ensured by [dijkstra()](#dijkstra) and [findPath()](#findPath_aux) functions;
