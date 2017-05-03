@@ -5,6 +5,7 @@
 #include <vector> 
 #include <fstream> 
 #include <string>         
+#include <limits.h>
 
 #include "DLL.h"
 #include "tree.h"
@@ -57,7 +58,4 @@ void findPath(Label, Label, list::List &, int &, const Graph& g);
 
 
 /* Funzioni che non caratterizzano il TDD Graph, ma che servono per input/output */
-//tree::Tree readFromFile(string);
 void printGraph(const graph::Graph&);
-
-void trealize(graph::Label, graph::Graph&);
