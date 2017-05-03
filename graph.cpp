@@ -25,8 +25,6 @@ bool memberNode(Label , const Graph&);
 void reinit(Graph&);
 Graph getVertex(Label , const Graph&);
 int* dijkstra(Graph&, Label);
-void initializeTreeDFS(Graph&, tree::Tree&);
-void initializeTreeBFS(Graph&, tree::Tree&);
 int computeLenght(const list::List&, const Graph&, unsigned int);
 void findPath_aux(Graph&, Label, Label, int*, list::List&);
 void printAdj(const adjList&);
