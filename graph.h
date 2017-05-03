@@ -8,7 +8,6 @@
 #include <limits.h>
 
 #include "DLL.h"
-#include "tree.h"
 using namespace std;
 
 namespace graph {
