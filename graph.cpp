@@ -31,7 +31,7 @@ struct graph::vertexNode{
 bool memberNode(Label , const Graph&);
 void reinit(Graph&);
 Graph getVertex(Label , const Graph&);
-int* dijkstra(Graph&, Label, Label*&);
+Label* dijkstra(Graph&, Label, Label, int&);
 int computeLenght(const list::List&, const Graph&, unsigned int);
 void findPath_aux(Graph&, Label, Label, Label*, list::List&);
 void printAdj(const adjList&);
@@ -131,13 +131,9 @@ list::List graph::adjacentList(Label v1, const Graph& g) {
 // La funzione rappresenta una variante della visita DFS
 
 void graph::findPath(Label v1, Label v2, list::List &path, int &len, const Graph& g) {
-	int index;
 	Graph tmp = g;
-	nodeDegree(v2, index, g);
-	Label* prev;
-	int* p = dijkstra(tmp, v1, prev);
+	Label* prev = dijkstra(tmp, v1, prev);
 	findPath_aux(tmp, v1, v2, prev, path);
-	len = p[index];
 	delete[] p;
 }
 /*******************************************************************************************************/
@@ -179,7 +175,7 @@ Graph getVertex(Label l, const Graph& g){
 	return getVertex(l, g->nextVertex);
 }
 
-int* dijkstra(Graph& g, Label from, Label*& previous){
+Label* dijkstra(Graph& g, Label from, Label to, int&){
 	reinit(g);
 	//creazione dell'array di dimensione del numero di nodi:
 	Label temp_Label;
@@ -223,7 +219,9 @@ int* dijkstra(Graph& g, Label from, Label*& previous){
 			}
 		}
 	}while(!list::isEmpty(queue));
-	return distance;
+	nodeDegree(to, index, g);
+	len = distance[index];
+	return previous;
 }
 
 void findPath_aux(Graph& g, Label from, Label to, Label* previous, list::List& path){
