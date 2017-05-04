@@ -44,11 +44,8 @@ It implements, more or less, graph data type and some basic functions:
 
 
 ### UPDATE:
-- Added findPath's auxiliar function: ```int* dijkstra(Graph&, Label)```:
-    * implement [Dijkstra's algorithm](https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm) and return an array wich contains the shortest distance of each graph's vertex from the given label; (**Note**: i-th elem of array is referred to i-th vertex in graph)
-
-- Added findPath's auxiliary function ```void findPath_aux(Graph&, Label, Label, int*, list::List&)```:
+- modified findPath's auxiliar function: ```int* dijkstra(Graph&, Label)``` to ```Label* dijkstra(Graph&, Label, Label, int&)```:
+    * implement [Dijkstra's algorithm](https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm) and return an array in wich i-th element is the nearest vertex of the i-th vertex in graph. Return in 4th parameter the shortest distance between first and second Label;
+- Modified findPath's auxiliary function ```void findPath_aux(Graph&, Label, Label, int*, list::List&)``` to ```void findPath_aux(Graph&, Label, Label, Label*, list::List&)```:
     * returns in 4-th parameter the path, label by label, wich leads from first label to second label;
 
-- Removed ```tree.h``` library:
-    * spanning tree computation is now ensured by dijkstra() and findPath_aux() functions;
