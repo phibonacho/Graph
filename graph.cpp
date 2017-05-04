@@ -134,7 +134,7 @@ void graph::findPath(Label v1, Label v2, list::List &path, int &len, const Graph
 	Graph tmp = g;
 	Label* prev = dijkstra(tmp, v1, prev);
 	findPath_aux(tmp, v1, v2, prev, path);
-	delete[] p;
+	delete[] prev;
 }
 /*******************************************************************************************************/
 // Stampa il grafo
