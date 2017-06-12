@@ -43,6 +43,7 @@ List list::createEmpty(){
 	List aux = new Cell;
 	aux->next = aux;
 	aux->prev = aux;
+	aux->elem = emptyElem;
 	return aux;
 }
 
@@ -132,12 +133,17 @@ unsigned int list::size(const List& l){
 	return counter;
 }
 
-void list::clear(List& l){
-	if(l->next==l) return;
+void clear_aux(List& l){
+	if(l->elem==emptyElem) return;
 	List tmp = l->next;
 	delete l;
 	l = NULL;
 	return clear(tmp);
+}
+
+void list::clear(List& l){
+	clear_aux(l->next);
+
 }
 
 void printList(const list::List& l){
